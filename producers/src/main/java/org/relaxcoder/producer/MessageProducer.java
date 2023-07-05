@@ -2,6 +2,8 @@ package org.relaxcoder.producer;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +11,8 @@ import java.util.concurrent.ExecutionException;
 
 
 public class MessageProducer {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageProducer.class);
     String topicName = "test-topic";
     KafkaProducer<String, String> kafkaProducer;
 
@@ -30,10 +34,16 @@ public class MessageProducer {
         RecordMetadata recordMetadata = null;
         try {
             recordMetadata = kafkaProducer.send(producerRecord).get();
-
+            logSuccessResponse(message, key, recordMetadata);
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            logger.error("Exception in publishMessageSync: {}", e.getMessage());
         }
+    }
+
+    public void logSuccessResponse(String message, String key, RecordMetadata recordMetadata){
+        logger.info("Message **{}** sent successfully with the key **{}** .", message, key);
+        logger.info("Published Record Offset is {} and the partition is {}",
+                recordMetadata.offset(), recordMetadata.partition());
     }
     public static void main(String[] args) {
         Map<String, Object> producerProps = propsMap();
