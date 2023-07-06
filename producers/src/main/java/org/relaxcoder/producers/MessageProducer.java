@@ -1,4 +1,4 @@
-package org.relaxcoder.producer;
+package org.relaxcoder.producers;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 public class MessageProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageProducer.class);
-    String topicName = "test-topic";
+    String topicName = "test-topic-replicated";
     KafkaProducer<String, String> kafkaProducer;
 
     public MessageProducer( Map<String, Object> propMap) {
@@ -40,6 +40,7 @@ public class MessageProducer {
         propMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
         propMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        propMap.put(ProducerConfig.ACKS_CONFIG, "all");
 
         return propMap;
     }
